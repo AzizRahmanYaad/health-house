@@ -17,10 +17,10 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
-    "next": "15.1.6",
+    "next": "^15.1.12",
     "pg": "^8.13.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.0.8",
+    "react-dom": "^19.0.8",
     "sanitize-html": "^2.14.0"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "@types/sanitize-html": "^2.13.0",
     "dotenv": "^16.4.7",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^15.1.6",
+    "eslint-config-next": "^15.1.12",
     "typescript": "^5.7.2"
   }
 }
