@@ -1,0 +1,10 @@
+# Netlify build configuration — the Next.js runtime plugin handles
+# App Router pages, Server Actions and Route Handlers as Netlify Functions.
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
