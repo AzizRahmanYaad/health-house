@@ -1,0 +1,111 @@
+/* =====================================================================
+   PASHTO SUBTITLES — overlay caption + synchronised transcript panel
+   ===================================================================== */
+
+/* --- native <track> captions on our own <video> --- */
+video::cue {
+  font-family: 'Noto Naskh Arabic', 'Segoe UI', Tahoma, serif;
+  font-size: 1.02em;
+  line-height: 1.7;
+  background: rgba(8, 11, 24, .82);
+  color: #fff;
+}
+
+/* --- our own caption overlay (used for YouTube and as a styled fallback) --- */
+.player { position: relative; }
+
+.sub-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 58px;
+  transform: translateX(-50%);
+  max-width: min(88%, 900px);
+  padding: 9px 18px;
+  border-radius: 12px;
+  background: rgba(8, 11, 24, .84);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  font-family: 'Noto Naskh Arabic', 'Segoe UI', Tahoma, serif;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  text-align: center;
+  pointer-events: none;
+  z-index: 3;
+  animation: fadeIn .18s ease;
+}
+
+@media (max-width: 640px) {
+  .sub-overlay { font-size: .92rem; bottom: 46px; padding: 7px 13px; }
+}
+
+/* --- transcript panel --- */
+.sub-panel .cues {
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+
+.cue {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 13px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  text-align: right;
+  font: inherit;
+  font-family: 'Noto Naskh Arabic', 'Segoe UI', Tahoma, serif;
+  line-height: 1.95;
+  transition: background .18s, border-color .18s, color .18s;
+}
+.cue:hover { background: var(--surface-2); color: var(--text); }
+
+.cue.is-active {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  color: var(--text);
+  font-weight: 600;
+}
+html[data-theme="dark"] .cue.is-active { color: #EDEBFF; }
+
+.cue__t {
+  flex: none;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: .74rem;
+  font-weight: 700;
+  color: var(--text-3);
+  background: var(--surface-3);
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-top: 4px;
+  direction: ltr;
+}
+.cue.is-active .cue__t { background: var(--brand); color: #fff; }
+
+.cue__x { flex: 1; min-width: 0; }
+
+/* --- admin subtitle editor --- */
+.vtt-editor {
+  width: 100%;
+  min-height: 260px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: .85rem;
+  line-height: 1.75;
+  direction: ltr;
+  text-align: left;
+}
+.vtt-hint code {
+  background: var(--surface-3);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: .85em;
+}

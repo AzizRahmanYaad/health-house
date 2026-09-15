@@ -1,0 +1,320 @@
+/* =====================================================================
+   IMMERSIVE LESSON READER
+   The lesson text below the video is the part students spend the most
+   time with, so it gets its own reading surface:
+
+     1. Reading polish for .lesson-body everywhere (wider, calmer type)
+     2. The reader toolbar that sits above the lesson text
+     3. The full-screen reader overlay
+     4. Book mode — the text is laid out in columns and turned page by
+        page, so a long lesson is read instead of scrolled
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. READING POLISH (applies in the page as well as in the reader)    */
+/* ------------------------------------------------------------------ */
+.lesson-body {
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: var(--text-2);
+  overflow-wrap: break-word;
+}
+.lesson-body > *:first-child { margin-top: 0; }
+.lesson-body > *:last-child  { margin-bottom: 0; }
+
+.lesson-body h2,
+.lesson-body h3 {
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  margin: 1.7em 0 .55em;
+  padding-inline-start: 13px;
+  border-inline-start: 3px solid var(--brand);
+  line-height: 1.4;
+}
+.lesson-body h3 { font-size: 1.1rem; }
+.lesson-body h2 { font-size: 1.26rem; }
+.lesson-body h4 { color: var(--text); margin: 1.35em 0 .4em; }
+
+.lesson-body ul, .lesson-body ol { margin: 0 0 1.15em; }
+.lesson-body li { margin-bottom: .5em; }
+.lesson-body li::marker { color: var(--brand); font-weight: 700; }
+
+.lesson-body blockquote {
+  background: var(--surface-2);
+  border-left: 0; border-right: 0;
+  border-inline-start: 3px solid var(--brand);
+  border-radius: var(--r-sm);
+  padding: 14px 18px;
+  margin: 0 0 1.2em;
+}
+
+/* Long text no longer runs as a narrow strip, but it still stops at a
+   comfortable measure. The reader and the wide toggle lift the limit. */
+.lesson-body            { max-width: 74ch; }
+.lesson-body[dir="rtl"] { max-width: 68ch; }
+.reader .lesson-body,
+.lesson-read--wide .lesson-body,
+.lesson-read--wide .lead { max-width: none; }
+
+/* ------------------------------------------------------------------ */
+/* 2. THE TOOLBAR ABOVE THE LESSON TEXT                                */
+/* ------------------------------------------------------------------ */
+.readtools {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.readtools__label {
+  font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-3);
+  margin-inline-end: auto;
+}
+.readtools .btn-read {
+  background: var(--grad-brand); color: #fff; border: 0;
+  box-shadow: var(--shadow-brand);
+}
+.readtools .btn-read:hover { transform: translateY(-2px); color: #fff; }
+.readtools kbd {
+  background: rgba(255,255,255,.22); border-radius: 5px;
+  padding: 1px 6px; margin-inline-start: 4px;
+  font-family: inherit; font-size: .82em; font-weight: 700;
+}
+.readtools .is-saved {
+  border-color: var(--brand); color: var(--brand); background: var(--brand-tint);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. THE READER OVERLAY                                               */
+/* ------------------------------------------------------------------ */
+html.reader-open, html.reader-open body { overflow: hidden; }
+
+.reader {
+  position: fixed; inset: 0; z-index: 400;
+  display: flex; flex-direction: column;
+  /* the reading surface is plain white — nothing behind the text */
+  background: var(--surface);
+  animation: readerIn .28s var(--ease-out);
+
+  /* The side padding is shared with the column gap below — see book mode. */
+  --rpad: clamp(20px, 4vw, 60px);
+}
+/* Opacity only. Animating a transform here promotes the reader to its own
+   compositor layer, and in book mode that layer is as wide as every column
+   in the lesson — thousands of pixels — which the browser gives up on and
+   paints as an empty box until something forces a repaint. */
+@keyframes readerIn { from { opacity: 0; } to { opacity: 1; } }
+
+.reader__bar {
+  flex: none;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+.reader__id { min-width: 0; flex: 1; }
+.reader__eyebrow {
+  display: block;
+  font-size: .68rem; font-weight: 800; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.reader__title {
+  margin: 2px 0 0; font-size: 1.02rem; font-weight: 800; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.reader__title[dir="rtl"] { font-family: var(--font-rtl); }
+
+.reader__tools { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+
+/* a segmented control */
+.rgroup {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--line-strong); border-radius: var(--r-pill);
+  background: var(--surface-2); padding: 3px;
+}
+.rgroup__btn {
+  border: 0; background: transparent; cursor: pointer;
+  color: var(--text-2); font: inherit; font-size: .8rem; font-weight: 700;
+  padding: 5px 11px; border-radius: var(--r-pill); line-height: 1;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background .18s var(--ease), color .18s var(--ease);
+}
+.rgroup__btn:hover { background: var(--surface-3); color: var(--text); }
+.rgroup__btn.is-active { background: var(--brand); color: #fff; }
+.rgroup__val {
+  min-width: 34px; text-align: center;
+  font-size: .78rem; font-weight: 800; color: var(--text-3);
+}
+.rgroup__cap {
+  font-size: .68rem; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-3);
+  padding: 0 8px 0 10px;
+}
+@media (max-width: 1180px) { .rgroup__cap { display: none; } }
+
+/* ---- the document surface ---- */
+.reader__stage { flex: 1; min-height: 0; position: relative; }
+
+.reader__doc {
+  height: 100%;
+  padding: 30px var(--rpad);
+  color: var(--text-2);
+  outline: none;
+}
+.reader__doc .lesson-body,
+.reader__doc .lead { font-size: var(--rfs, 18px); line-height: var(--rlh, 1.95); }
+.reader__doc .lesson-body[dir="rtl"],
+.reader__doc .lead[dir="rtl"] {
+  font-size: calc(var(--rfs, 18px) + 1px);
+  line-height: calc(var(--rlh, 1.95) + .15);
+}
+.reader__doc h2 { font-size: calc(var(--rfs, 18px) * 1.36); }
+.reader__doc h3 { font-size: calc(var(--rfs, 18px) * 1.2); }
+.reader__doc h4 { font-size: calc(var(--rfs, 18px) * 1.06); }
+
+/* the width choice */
+.reader__inner { margin-inline: auto; height: 100%; }
+.reader[data-width="narrow"] .reader__inner { max-width: 820px; }
+.reader[data-width="medium"] .reader__inner { max-width: 1180px; }
+.reader[data-width="full"]   .reader__inner { max-width: none; }
+
+/* ---- scroll mode ---- */
+.reader[data-mode="scroll"] .reader__doc { overflow-y: auto; overscroll-behavior: contain; }
+.reader[data-mode="scroll"] .reader__inner { height: auto; padding-bottom: 40px; }
+
+/* ------------------------------------------------------------------ */
+/* 4. BOOK MODE — columns that page sideways, never down               */
+/* ------------------------------------------------------------------ */
+.reader[data-mode="book"] .reader__doc {
+  overflow-x: auto; overflow-y: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.reader[data-mode="book"] .reader__doc::-webkit-scrollbar { display: none; }
+
+/* The gap is exactly twice the reader's side padding. Overflowing columns
+   are clipped at the padding edge, so a gap of 2×padding means the first
+   off-screen column starts a full padding-width beyond the clip — nothing
+   of the next page ever peeks into the margin. It also makes the page step
+   a clean (column-set width + gap), which is what reader.js scrolls by. */
+.reader[data-mode="book"] .reader__inner {
+  max-width: none;                       /* width is chosen by column count here */
+  columns: var(--rcols, 2);
+  column-gap: calc(var(--rpad) * 2);
+  column-fill: auto;
+  column-rule: 1px solid var(--line);
+  height: 100%;
+}
+
+/* nothing may be sliced in half across a column break */
+.reader[data-mode="book"] .reader__inner h1,
+.reader[data-mode="book"] .reader__inner h2,
+.reader[data-mode="book"] .reader__inner h3,
+.reader[data-mode="book"] .reader__inner h4,
+.reader[data-mode="book"] .reader__inner li,
+.reader[data-mode="book"] .reader__inner pre,
+.reader[data-mode="book"] .reader__inner img,
+.reader[data-mode="book"] .reader__inner table,
+.reader[data-mode="book"] .reader__inner figure,
+.reader[data-mode="book"] .reader__inner blockquote { break-inside: avoid; }
+
+.reader[data-mode="book"] .reader__inner h1,
+.reader[data-mode="book"] .reader__inner h2,
+.reader[data-mode="book"] .reader__inner h3,
+.reader[data-mode="book"] .reader__inner h4 { break-after: avoid; }
+
+.reader[data-mode="book"] .reader__inner img { max-height: 46vh; object-fit: contain; }
+
+/* ---- page controls ---- */
+.reader__foot {
+  flex: none;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.reader__pos {
+  font-size: .78rem; font-weight: 800; color: var(--text-2);
+  min-width: 160px; text-align: center;
+}
+.reader__nav {
+  width: 40px; height: 40px; flex: none;
+  border: 1px solid var(--line-strong); border-radius: 50%;
+  background: var(--surface); color: var(--text-2);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background .22s var(--ease), border-color .22s var(--ease), color .22s var(--ease);
+}
+.reader__nav:hover:not(:disabled) { background: var(--brand); border-color: var(--brand); color: #fff; }
+.reader__nav:disabled { opacity: .35; cursor: default; }
+
+/* a thin progress line across the bottom of the reader */
+.reader__track { flex: none; height: 3px; background: var(--surface-3); }
+.reader__track span {
+  display: block; height: 100%; width: 0;
+  background: var(--grad-brand); border-radius: 0 3px 3px 0;
+  transition: width .22s var(--ease);
+}
+
+/* invisible click zones for turning pages by tapping the edges */
+.reader__zone {
+  position: absolute; top: 0; bottom: 0; width: clamp(46px, 7vw, 110px);
+  border: 0; background: transparent; cursor: pointer; z-index: 2;
+  color: var(--text-3); opacity: 0;
+  display: grid; place-items: center;
+  transition: opacity .2s var(--ease);
+}
+.reader__zone:hover { opacity: 1; }
+.reader__zone--prev { inset-inline-start: 0; }
+.reader__zone--next { inset-inline-end: 0; }
+.reader[data-mode="scroll"] .reader__zone { display: none; }
+
+/* the keyboard hint fades away once the reader has been used */
+.reader__hint {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 3; pointer-events: none;
+  padding: 7px 14px; border-radius: var(--r-pill);
+  background: var(--text); color: var(--surface);
+  font-size: .74rem; font-weight: 700;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp .4s var(--ease-out);
+  transition: opacity .5s var(--ease);
+}
+.reader__hint kbd {
+  background: rgba(255,255,255,.18); border-radius: 5px;
+  padding: 1px 6px; font-family: inherit; font-size: .9em;
+}
+.reader__hint.is-gone { opacity: 0; }
+
+@media (max-width: 780px) {
+  .reader__bar { padding: 10px 14px; gap: 10px; }
+  .reader__doc { padding: 20px 16px; }
+  .reader__title { font-size: .92rem; }
+  .rgroup__btn { padding: 5px 9px; }
+  .reader__pos { min-width: 0; font-size: .72rem; }
+}
+
+/* On a phone the toolbar must not eat a third of the reading area. */
+@media (max-width: 560px) {
+  .reader__bar { padding: 8px 10px; gap: 7px; }
+  .reader__eyebrow { display: none; }
+  .reader__id { flex-basis: 100%; }
+  .reader__title { font-size: .86rem; margin: 0; }
+  .reader__tools { gap: 6px; width: 100%; }
+  .rgroup { padding: 2px; }
+  .rgroup__btn { padding: 4px 8px; font-size: .74rem; gap: 4px; }
+  .reader__foot { padding: 8px 12px; gap: 10px; }
+  .reader__nav { width: 36px; height: 36px; }
+}
+
+/* Printing a lesson should give plain, readable pages. */
+@media print {
+  .reader__bar, .reader__foot, .reader__zone,
+  .reader__hint, .reader__track, .readtools { display: none !important; }
+  .reader { position: static; }
+  .reader__stage { position: static; }
+  .reader__doc { overflow: visible !important; height: auto !important; }
+  .reader__inner { columns: 1 !important; height: auto !important; }
+}

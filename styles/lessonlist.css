@@ -1,0 +1,196 @@
+/* =====================================================================
+   LESSON LIST — clear, separated, right-to-left aware
+   Loaded after app.css / rich.css.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. THE BUG FIX                                                      */
+/*    .lesson-list is a column flex container. When it is given a      */
+/*    max-height (the sidebar list), flex items shrink by default, so  */
+/*    40 lessons were each squashed to ~22px and clipped by            */
+/*    overflow:hidden. Flex items must never shrink here.              */
+/* ------------------------------------------------------------------ */
+.lesson-list > * {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. SEPARATION — every lesson reads as its own selectable row        */
+/* ------------------------------------------------------------------ */
+.lesson-list {
+  gap: 10px;
+}
+
+.lesson-item {
+  align-items: flex-start;
+  gap: 13px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+  overflow: visible;              /* never clip a wrapped title */
+  transition: border-color .22s var(--ease), background .22s var(--ease),
+              box-shadow .22s var(--ease), transform .22s var(--ease-out);
+}
+
+/* a status stripe down the leading edge makes state readable at a glance */
+.lesson-item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--line-strong);
+  transition: background .22s;
+}
+.lesson-item[dir="rtl"]::before { border-radius: 3px 0 0 3px; }
+.lesson-item.is-done::before    { background: var(--teal); }
+.lesson-item.is-current::before { background: var(--grad-brand); }
+
+.lesson-item:hover {
+  border-color: var(--brand);
+  background: var(--surface-2);
+  transform: none;                /* the old translateX made rows feel jumpy */
+  box-shadow: var(--shadow-sm);
+}
+.lesson-item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.lesson-item.is-current {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand-soft) 60%, var(--surface));
+  box-shadow: 0 0 0 1px var(--brand) inset;
+}
+.lesson-item.is-done { background: var(--surface); }
+.lesson-item.is-done .lesson-item__title { color: var(--text-2); }
+
+/* --- the number / status chip --- */
+.lesson-item__num {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  font-size: .8rem;
+  margin-top: 1px;
+}
+
+/* --- the title: wraps freely, never clipped --- */
+.lesson-item__body { align-self: center; }
+
+.lesson-item__title {
+  display: block;
+  font-size: .9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.lesson-item__title[dir="rtl"],
+.lesson-item[dir="rtl"] .lesson-item__title {
+  font-family: var(--font-rtl);
+  line-height: 1.9;
+  font-size: .95rem;
+}
+
+.lesson-item__meta { margin-top: 4px; row-gap: 4px; }
+
+/* ------------------------------------------------------------------ */
+/* 3. RIGHT-TO-LEFT MIRRORING                                          */
+/*    Number on the right, chevron on the left, text right-aligned.    */
+/* ------------------------------------------------------------------ */
+.lesson-item[dir="rtl"] {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.lesson-item[dir="rtl"] .lesson-item__meta { flex-direction: row-reverse; }
+.lesson-item[dir="rtl"] > .icon { transform: rotate(180deg); }
+
+/* ------------------------------------------------------------------ */
+/* 4. COMPACT VARIANT — the sidebar "all lessons in this subject" list */
+/* ------------------------------------------------------------------ */
+.lesson-list--compact { gap: 7px; }
+
+.lesson-list--compact .lesson-item { padding: 10px 12px; gap: 11px; }
+.lesson-list--compact .lesson-item__num { width: 26px; height: 26px; border-radius: 9px; font-size: .72rem; }
+.lesson-list--compact .lesson-item__title { font-size: .84rem; line-height: 1.55; }
+.lesson-list--compact .lesson-item[dir="rtl"] .lesson-item__title { font-size: .88rem; line-height: 1.85; }
+
+/* a scrollable list needs breathing room for the scrollbar */
+.lesson-list--scroll {
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 2px 6px 2px 2px;
+  margin: 0 -4px;
+}
+.lesson-list--scroll[dir="rtl"] { padding: 2px 2px 2px 6px; }
+
+/* group heading inside a long list */
+.lesson-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 2px 2px;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.lesson-group::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.lesson-group[dir="rtl"] {
+  letter-spacing: normal;
+  text-transform: none;
+  font-size: .78rem;
+  font-family: var(--font-rtl);
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. RTL TIMETABLE / DAY ROWS                                         */
+/* ------------------------------------------------------------------ */
+.tt-slot[dir="rtl"] { flex-direction: row-reverse; text-align: right; }
+.tt-slot[dir="rtl"] .tt-slot__time { direction: ltr; }
+
+/* ------------------------------------------------------------------ */
+/* 6. RTL CARDS AND HEADINGS ELSEWHERE                                 */
+/* ------------------------------------------------------------------ */
+.subject-card h3[dir="rtl"],
+.card__title[dir="rtl"],
+h1[dir="rtl"], h2[dir="rtl"], h3[dir="rtl"] {
+  font-family: var(--font-rtl);
+  line-height: 1.75;
+}
+
+/* the lesson body already sets its own font; keep numbers left-to-right */
+[dir="rtl"] .tiny.dim,
+[dir="rtl"] .badge { font-family: var(--font-rtl); }
+
+@media (max-width: 640px) {
+  .lesson-item { padding: 11px 12px; gap: 10px; }
+  .lesson-item__title { font-size: .87rem; }
+}
+
+/* --- small day / duration chips inside a compact row --- */
+.chip-day {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-family: var(--font-rtl);
+  font-size: .7rem;
+  font-weight: 700;
+  line-height: 1.7;
+}
+.chip-day--plain { background: var(--surface-3); color: var(--text-3); }
+html[data-theme="dark"] .chip-day { color: #B9A8FF; }
+.lesson-item.is-done .chip-day { background: var(--teal-soft); color: var(--teal); }

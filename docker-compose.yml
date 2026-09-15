@@ -1,0 +1,17 @@
+# Local PostgreSQL matching the defaults in .env.example:
+#   DATABASE_URL=postgres://healthhouse:healthhouse@localhost:5432/healthhouse
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: healthhouse
+      POSTGRES_PASSWORD: healthhouse
+      POSTGRES_DB: healthhouse
+    ports:
+      - "5432:5432"
+    volumes:
+      - healthhouse-pg:/var/lib/postgresql/data
+
+volumes:
+  healthhouse-pg:

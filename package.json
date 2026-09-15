@@ -1,0 +1,36 @@
+{
+  "name": "health-house",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Health House — Online Midwifery Learning Portal (Next.js + PostgreSQL)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:setup": "node scripts/db-setup.mjs",
+    "db:schema": "node scripts/db-setup.mjs --schema-only",
+    "db:seed": "node scripts/db-setup.mjs --seed-only",
+    "db:convert-dump": "node scripts/convert-mysql-dump.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6",
+    "next": "15.1.6",
+    "pg": "^8.13.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "sanitize-html": "^2.14.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@types/sanitize-html": "^2.13.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.2"
+  }
+}
