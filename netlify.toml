@@ -2,6 +2,7 @@
 # App Router pages, Server Actions and Route Handlers as Netlify Functions.
 [build]
   command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
